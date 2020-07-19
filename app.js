@@ -17,11 +17,12 @@ app.post("/", function (req, res) {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const userEmail = req.body.inputEmail;
-  var data = {
+
+  const data = {
     members: [
       {
         email_address: userEmail,
-        status: "Subscribed",
+        status: "subscribed",
         merge_fields: {
           FNAME: firstName,
           LNAME: lastName,
@@ -31,20 +32,31 @@ app.post("/", function (req, res) {
   };
 
   const jsonData = JSON.stringify(data);
-  const url = "https://us10.api.mailchimp.com/3.0/lists/LIST_ID/";
+
+  const url = "https://us10.api.mailchimp.com/3.0/lists/40a27daea3";
   const options = {
     method: "POST",
-    auth: "mailchimp_API",
+    auth: "deden1:1b6e4fb681b099c18d6175177f09b1ea-us10",
   };
 
   const request = https.request(url, options, function (response) {
     response.on("data", function (data) {
       console.log(JSON.parse(data));
+
+      if (response.statusCode === 200) {
+        res.sendFile(dir + "success.html");
+      } else {
+        res.sendFile(dir + "failure.html");
+      }
     });
   });
 
   request.write(jsonData);
   request.end();
+});
+
+app.post("/failure", function (req, res) {
+  res.redirect("/");
 });
 
 app.listen(port, function () {
